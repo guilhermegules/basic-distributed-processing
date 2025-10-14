@@ -2,6 +2,8 @@
 
 This project demonstrates a distributed processing system built with Node.js, RabbitMQ, and Docker Compose - designed to handle large-scale data processing tasks using a producer-consumer architecture and is organized as a monorepo managed by pnpm.
 
+![](./docs/basic-distributed-processing.png)
+
 ## System:
 
 1. Distributor (Producer) - reads file, splits in chunks, sends to queue
