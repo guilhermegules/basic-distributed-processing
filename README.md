@@ -66,6 +66,15 @@ pnpm start --filter ./services/collector
 pnpm run build
 ```
 
+### Running tests
+
+- First build all services and k6
+  - `docker compose -f docker-compose.test.yaml up -d --build`
+- Then run k6 tests
+  - `docker compose -f docker-compose.test.yaml run --rm k6`
+- After tests end clear the containers
+  - `docker compose -f docker-compose.test.yaml down -v`
+
 ## 📜 License
 
 MIT License © 2025 — Guilherme Gules Moreira
