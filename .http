@@ -1,0 +1,13 @@
+### Process a file
+POST http://localhost:3000/process
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="large-file.txt"
+Content-Type: text/plain
+
+< ./data/large-file.txt
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Health check
+GET http://localhost:3000/health

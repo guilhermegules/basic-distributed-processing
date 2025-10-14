@@ -55,3 +55,23 @@ services:
     <<: *service-template
     command: ["pnpm", "start", "--filter", "./services/collector"]
     container_name: collector
+
+  k6:
+    build:
+      context: ./tests
+      dockerfile: Dockerfile
+    container_name: k6
+    depends_on:
+      - producer
+      - worker
+      - collector
+    volumes:
+      - ./data:/scripts/data
+    ports:
+      - 5665:5665
+    working_dir: /scripts
+    entrypoint: ["k6"]
+    command: ["run", "--out", "dashboard=0.0.0.0:5665", "/scripts/load-test.js"]
+
+volumes:
+  grafana_data:

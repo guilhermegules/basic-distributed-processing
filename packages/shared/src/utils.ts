@@ -1,14 +1,14 @@
-import fs from "fs";
 import readline from "readline";
+import { Readable } from "stream";
 
-export async function* readFileChunks(
-  path: string,
+export async function* readFileFromBuffer(
+  buffer: Buffer,
   linesPerChunk: number
 ): AsyncGenerator<string[]> {
-  const fileStream = fs.createReadStream(path, { encoding: "utf8" });
+  const stream = Readable.from(buffer.toString("utf-8").split("/\r?\n/"));
 
   const rl = readline.createInterface({
-    input: fileStream,
+    input: stream,
     crlfDelay: Infinity,
   });
 

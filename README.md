@@ -26,6 +26,7 @@ Collector consumes "results" queue >> sums all partials >> prints total
 
 - Docker + Docker Compose
 - pnpm (npm i -g pnpm)
+- Copy the `.env.example` to `.env`
 
 ### 2 Prepare test file
 
@@ -64,6 +65,15 @@ pnpm start --filter ./services/collector
 # Build
 pnpm run build
 ```
+
+### Running tests
+
+- First build all services and k6
+  - `docker compose -f docker-compose.test.yaml up -d --build`
+- Then run k6 tests
+  - `docker compose -f docker-compose.test.yaml run --rm k6`
+- After tests end clear the containers
+  - `docker compose -f docker-compose.test.yaml down -v`
 
 ## 📜 License
 
