@@ -9,7 +9,7 @@ const router = new Router();
 const upload = multer();
 const port = Number(process.env.PORT);
 
-router.post("/upload", upload.single("file"), async (ctx) => {
+router.post("/process", upload.single("file"), async (ctx) => {
   if (!ctx.file) {
     ctx.status = 400;
     ctx.body = { message: "No file uploated" };
