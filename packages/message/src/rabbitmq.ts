@@ -6,7 +6,7 @@ let connection: Connection | null = null;
 export function createConnection() {
   if (!connection) {
     connection = new Connection({
-      url: `amqp://guest:guest@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
+      url: `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
       connectionName: `${process.env.RABBITMQ_HOST}`,
       hostname: `${process.env.RABBITMQ_HOST}`,
       hosts: [`${process.env.RABBITMQ_HOST}`],
