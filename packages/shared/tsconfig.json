@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["src", "../message/src/rabbitmq.ts", "../message/src/types"]
+}

@@ -1,0 +1,43 @@
+x-service-template: &service-template
+  build:
+    context: .
+    dockerfile: Dockerfile
+  env_file:
+    - .env
+  environment:
+    - NODE_ENV=${NODE_ENV}
+    - LOG_LEVEL=${LOG_LEVEL}
+  volumes:
+    - ./:/app
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  producer:
+    <<: *service-template
+    command: ["pnpm", "start", "--filter", "./services/producer"]
+    container_name: producer
+
+  worker:
+    <<: *service-template
+    command: ["pnpm", "start", "--filter", "./services/worker"]
+    container_name: worker
+
+  collector:
+    <<: *service-template
+    command: ["pnpm", "start", "--filter", "./services/collector"]
+    container_name: collector
