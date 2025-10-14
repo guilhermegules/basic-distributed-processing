@@ -26,6 +26,7 @@ Collector consumes "results" queue >> sums all partials >> prints total
 
 - Docker + Docker Compose
 - pnpm (npm i -g pnpm)
+- Copy the `.env.example` to `.env`
 
 ### 2 Prepare test file
 

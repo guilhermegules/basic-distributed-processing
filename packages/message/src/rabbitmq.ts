@@ -6,15 +6,15 @@ let connection: Connection | null = null;
 export function createConnection() {
   if (!connection) {
     connection = new Connection({
-      url: "amqp://guest:guest@rabbitmq:5672",
-      connectionName: "rabbitmq",
-      hostname: "rabbitmq",
-      hosts: ["rabbitmq"],
+      url: `amqp://guest:guest@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
+      connectionName: `${process.env.RABBITMQ_HOST}`,
+      hostname: `${process.env.RABBITMQ_HOST}`,
+      hosts: [`${process.env.RABBITMQ_HOST}`],
       connectionTimeout: 30000,
-      vhost: "rabbitmq",
-      password: "guest",
-      username: "guest",
-      port: "5672",
+      vhost: `${process.env.RABBITMQ_HOST}`,
+      password: process.env.RABBITMQ_PASSWORD,
+      username: process.env.RABBITMQ_USER,
+      port: process.env.RABBITMQ_PORT,
     });
   }
 
