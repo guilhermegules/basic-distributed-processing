@@ -6,7 +6,7 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "mongoose": "^8.19.2",
+    "mongodb": "^6.20.0",
     "rabbitmq-client": "^5.0.5",
     "shared": "workspace:*"
   }

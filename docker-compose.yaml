@@ -16,6 +16,8 @@ x-service-template: &service-template
   depends_on:
     rabbitmq:
       condition: service_healthy
+    mongo:
+      condition: service_healthy
 
 services:
   rabbitmq:
@@ -71,11 +73,6 @@ services:
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - MONGO_URI=${MONGO_URI}
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      mongo:
-        condition: service_healthy
 
 volumes:
   mongo_data:
