@@ -9,14 +9,9 @@ const CHUNK_SIZE = 1000;
 const CHUNKS_QUEUE = "chunks";
 const CHUNKS_EMIT_SIZE = 10;
 
-let connection: Connection;
-let publisher: Publisher;
-
 function initProducer() {
-  if (connection) return;
-
-  connection = createConnection();
-  publisher = connection.createPublisher({
+  const connection = createConnection();
+  const publisher = connection.createPublisher({
     confirm: true,
     maxAttempts: 3,
     exchanges: [{ exchange: CHUNKS_QUEUE, type: "fanout", durable: true }],
@@ -25,10 +20,30 @@ function initProducer() {
   process.once("SIGINT", closeConnection);
   process.once("SIGTERM", closeConnection);
   logger().info("✅ Producer connected to RabbitMQ");
+
+  return { connection, publisher };
+}
+
+async function publishChunk(
+  publisher: Publisher,
+  chunkId: string,
+  lines: string[]
+) {
+  const message: ChunkMessage = {
+    chunkId,
+    lines,
+  };
+
+  await publisher.send(
+    { exchange: CHUNKS_QUEUE, routingKey: "chunk.ready", durable: true },
+    message
+  );
+
+  logger().info(`📦 Sent chunk ${chunkId} (${message.lines.length} lines)`);
 }
 
 export async function producer(buffer: Buffer) {
-  initProducer();
+  const { publisher } = initProducer();
 
   const limit = pLimit(CHUNKS_EMIT_SIZE);
 
@@ -39,22 +54,8 @@ export async function producer(buffer: Buffer) {
   const tasks: Promise<void>[] = [];
 
   for await (const chunk of chunks) {
-    const message: ChunkMessage = {
-      chunkId,
-      lines: chunk,
-    };
-
     tasks.push(
-      limit(async () => {
-        await publisher.send(
-          { exchange: CHUNKS_QUEUE, routingKey: "chunk.ready", durable: true },
-          message
-        );
-
-        logger().info(
-          `📦 Sent chunk ${chunkId} (${message.lines.length} lines)`
-        );
-      })
+      limit(async () => await publishChunk(publisher, chunkId, chunk))
     );
   }
 
