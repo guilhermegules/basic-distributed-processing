@@ -12,7 +12,7 @@ export const options = {
 const file = open("./data/large-file.txt", "b");
 
 export default function () {
-  const url = "http://producer:3000/process";
+  const url = "http://nginx:80/process";
 
   const formData = {
     file: http.file(file, "large-file.txt", "text/plain"),

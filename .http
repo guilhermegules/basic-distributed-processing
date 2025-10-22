@@ -1,5 +1,5 @@
 ### Process a file
-POST http://localhost:3000/process
+POST http://localhost:9999/process
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -10,4 +10,4 @@ Content-Type: text/plain
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Health check
-GET http://localhost:3000/health
+GET http://localhost:9999/health
