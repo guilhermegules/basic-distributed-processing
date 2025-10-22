@@ -20,17 +20,18 @@ async function collector() {
       const data = msg.body as ResultMessage;
 
       try {
-        const result = await collection.updateOne(
+        const result = await collection.findOne({ chunkId: data.chunkId });
+        const updatedValue = await collection.updateOne(
           { chunkId: data.chunkId },
           {
             $set: {
-              partialSum: data.partialSum,
+              partialSum: data.partialSum + result?.partialSum || 0,
               receivedAt: new Date(),
             },
           },
           { upsert: true }
         );
-        logger().info(`🧮 Document created: ${JSON.stringify(result)}`);
+        logger().info(`🧮 Document created: ${JSON.stringify(updatedValue)}`);
       } catch (err) {
         logger().error(`Error creating document: ${err}`);
       }

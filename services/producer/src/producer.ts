@@ -17,8 +17,9 @@ export async function producer(buffer: Buffer) {
 
   const chunks = readFileFromBuffer(buffer, CHUNK_SIZE);
 
+  const chunkId = crypto.randomUUID();
+
   for await (const chunk of chunks) {
-    const chunkId = crypto.randomUUID();
     const message: ChunkMessage = {
       chunkId,
       lines: chunk,
