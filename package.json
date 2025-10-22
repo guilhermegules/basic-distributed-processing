@@ -13,6 +13,7 @@
   "author": "Guilherme Gules Moreira",
   "license": "ISC",
   "dependencies": {
+    "p-limit": "^7.2.0",
     "pino": "^10.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

@@ -2,22 +2,41 @@ import { createConnection, closeConnection } from "@message/rabbitmq";
 import { ChunkMessage } from "@message/types/chunk-message";
 import { logger } from "@shared/logger";
 import { readFileFromBuffer } from "@shared/utils";
+import pLimit from "p-limit";
+import Connection, { Publisher } from "rabbitmq-client";
 
 const CHUNK_SIZE = 1000;
 const CHUNKS_QUEUE = "chunks";
+const CHUNKS_EMIT_SIZE = 10;
 
-export async function producer(buffer: Buffer) {
-  const connection = createConnection();
+let connection: Connection;
+let publisher: Publisher;
 
-  const publisher = connection.createPublisher({
+function initProducer() {
+  if (connection) return;
+
+  connection = createConnection();
+  publisher = connection.createPublisher({
     confirm: true,
     maxAttempts: 3,
     exchanges: [{ exchange: CHUNKS_QUEUE, type: "fanout", durable: true }],
   });
 
+  process.once("SIGINT", closeConnection);
+  process.once("SIGTERM", closeConnection);
+  logger().info("✅ Producer connected to RabbitMQ");
+}
+
+export async function producer(buffer: Buffer) {
+  initProducer();
+
+  const limit = pLimit(CHUNKS_EMIT_SIZE);
+
   const chunks = readFileFromBuffer(buffer, CHUNK_SIZE);
 
   const chunkId = crypto.randomUUID();
+
+  const tasks: Promise<void>[] = [];
 
   for await (const chunk of chunks) {
     const message: ChunkMessage = {
@@ -25,14 +44,20 @@ export async function producer(buffer: Buffer) {
       lines: chunk,
     };
 
-    await publisher.send(
-      { exchange: CHUNKS_QUEUE, routingKey: "chunk.ready", durable: true },
-      message
+    tasks.push(
+      limit(async () => {
+        await publisher.send(
+          { exchange: CHUNKS_QUEUE, routingKey: "chunk.ready", durable: true },
+          message
+        );
+
+        logger().info(
+          `📦 Sent chunk ${chunkId} (${message.lines.length} lines)`
+        );
+      })
     );
-
-    logger().info(`📦 Sent chunk ${chunkId} (${message.lines.length} lines)`);
   }
-}
 
-process.once("SIGINT", closeConnection);
-process.once("SIGTERM", closeConnection);
+  await Promise.all(tasks);
+  logger().info(`✅ Finished sending all chunks for ${chunkId}`);
+}
