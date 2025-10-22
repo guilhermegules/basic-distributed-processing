@@ -16,6 +16,8 @@ x-service-template: &service-template
   depends_on:
     rabbitmq:
       condition: service_healthy
+    mongo:
+      condition: service_healthy
 
 services:
   rabbitmq:
@@ -30,6 +32,22 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=collector
+    command: ["mongod", "--quiet"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   producer:
     <<: *service-template
@@ -74,4 +92,4 @@ services:
     command: ["run", "--out", "dashboard=0.0.0.0:5665", "/scripts/load-test.js"]
 
 volumes:
-  grafana_data:
+  mongo_data:

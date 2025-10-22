@@ -11,7 +11,7 @@ async function worker() {
 
   const resultPublisher = connection.createPublisher({
     confirm: true,
-    exchanges: [{ exchange: RESULTS_QUEUE, type: "topic", durable: true }],
+    exchanges: [{ exchange: RESULTS_QUEUE, type: "fanout", durable: true }],
   });
 
   connection.createConsumer(
@@ -36,7 +36,7 @@ async function worker() {
       };
 
       await resultPublisher.send(
-        { exchange: RESULTS_QUEUE, routingKey: "sum.ready" },
+        { exchange: RESULTS_QUEUE, routingKey: "sum.ready", durable: true },
         resultMessage
       );
 

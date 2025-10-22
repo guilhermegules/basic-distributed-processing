@@ -12,7 +12,7 @@ const port = Number(process.env.PORT);
 router.post("/process", upload.single("file"), async (ctx) => {
   if (!ctx.file) {
     ctx.status = 400;
-    ctx.body = { message: "No file uploated" };
+    ctx.body = { message: "No file uploaded" };
     return;
   }
 

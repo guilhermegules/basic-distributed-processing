@@ -6,7 +6,8 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "shared": "workspace:*",
-    "rabbitmq-client": "^5.0.5"
+    "mongodb": "^6.20.0",
+    "rabbitmq-client": "^5.0.5",
+    "shared": "workspace:*"
   }
 }
